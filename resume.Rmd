@@ -1,20 +1,20 @@
 ---
-title: Nick Strayer's Resume"
-author: Nick Strayer
+title: "Lara Wehbe's Resume"
+author: "Lara Wehbe"
 date: "`r Sys.Date()`"
-output:
-  pagedown::html_resume:
-    css: ['css/custom_resume.css', 'css/styles.css', 'resume']
-    # set it to true for a self-contained HTML page but it'll take longer to render
+output: 
+  html_document:
+    css: ["css/custom_resume.css", "css/styles.css", "resume.css"]
     self_contained: true
 ---
-
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(
   results='asis', 
   echo = FALSE
 )
+
+# Library Imports
 library(tidyverse)
 library(glue)
 
@@ -26,131 +26,78 @@ links <- c()
 
 source('parsing_functions.R')
 
-
-# First let's get the data, filtering to only the items tagged as
-# Resume items
+# Read and clean position data
 position_data <- read_csv('positions.csv') %>% 
   filter(in_resume) %>% 
   mutate(
-    # Build some custom sections by collapsing others
     section = case_when(
       section %in% c('research_positions', 'industry_positions') ~ 'positions', 
       section %in% c('data_science_writings', 'by_me_press') ~ 'writings',
       TRUE ~ section
     )
   ) 
-
 ```
 
+---
 
-Aside
-================================================================================
+## **Contact Information** {#contact}
+```{r}
+cat("\n- <i class='fa fa-envelope'></i> lara.wehbe@asu.edu \n- <i class='fa fa-twitter'></i> LaraWehbe  \n- <i class='fa fa-github'></i> [github.com/lwehbe-1](https://github.com/lwehbe-1)  \n- <i class='fa fa-link'></i> [larawehbe.com](http://larawehbe.com/)  \n")
+```
 
+---
 
-![logo](beta_dist.png){width=100%}
-
-Contact {#contact}
---------------------------------------------------------------------------------
-
-
-
-- <i class="fa fa-envelope"></i> nick.strayer@gmail.com
-- <i class="fa fa-twitter"></i> NicholasStrayer
-- <i class="fa fa-github"></i> github.com/nstrayer
-- <i class="fa fa-link"></i> [nickstrayer.me](http://nickstrayer.me/)
-- <i class="fa fa-phone"></i> (734) 645-0110
-
-
-
-Language Skills {#skills}
---------------------------------------------------------------------------------
-
-
+## **Skills** {#skills}
 ```{r}
 skills <- tribble(
   ~skill,               ~level,
   "R",                  5,
-  "Javascript (d3.js)", 4.5,
-  "Python",             4,
-  "Bash",               3.5,
-  "SQL",                3,
-  "C++",                3,
-  "AWK",                3
+  "Python",             4.5,
+  "SQL",                4,
+  "JavaScript (d3.js)", 3.5,
+  "C++",                3
 )
 build_skill_bars(skills)
 ```
 
+---
 
-
-Open Source Contributions {#open-source}
---------------------------------------------------------------------------------
-
-All projects available at `github.com/nstrayer/<name>`
-
-
-- `shinysense`: R package to use sensor data in Shiny apps
-- `tuftesque`: Hugo theme (behind LiveFreeOrDichotomize.com)
-- `slid3r`: D3 add-on for fully svg slider inputs
-
-
-More info {#more-info}
---------------------------------------------------------------------------------
-
-See full CV at nickstrayer.me/cv for more complete list of positions and publications.
-
-
-Disclaimer {#disclaimer}
---------------------------------------------------------------------------------
-
-Made w/ [**pagedown**](https://github.com/rstudio/pagedown). 
-
-Source code: [github.com/nstrayer/cv](https://github.com/nstrayer/cv).
-
-Last updated on `r Sys.Date()`.
-
-
-
-
-Main
-================================================================================
-
-Nick Strayer {#title}
---------------------------------------------------------------------------------
-
-```{r}
-intro_text <- "I have made [visualizations viewed by hundreds of thousands of people](https://www.nytimes.com/interactive/2016/08/26/us/college-student-migration.html), [sped up query times for 25 terabytes of data by an average of 4,800 times](https://livefreeordichotomize.com/2019/06/04/using_awk_and_r_to_parse_25tb/), and built [packages for R](https://github.com/nstrayer/shinysense) that let you [do magic](http://nickstrayer.me/dataDayTexas/).
-
-Currently searching for a data science position that allows me to build tools using visualization and machine learning to help people explore and understand their data. 
-"
-
-
-cat(sanitize_links(intro_text))
-```
-
-
-
-Education {data-icon=graduation-cap data-concise=true}
---------------------------------------------------------------------------------
-
+## **Education** {data-icon=graduation-cap data-concise=true}
 ```{r}
 position_data %>% print_section('education')
 ```
 
+---
 
-
-Selected Positions {data-icon=suitcase}
---------------------------------------------------------------------------------
-
+## **Work Experience** {data-icon=suitcase}
 ```{r}
 position_data %>% print_section('positions')
 ```
 
-Selected Writing {data-icon=newspaper}
---------------------------------------------------------------------------------
+---
 
-
+## **Selected Writing** {data-icon=newspaper}
 ```{r}
-position_data %>% print_section('writings')
+# Prevent failure in case of missing data
+if (nrow(position_data) > 0) {
+  position_data <- position_data %>%
+    mutate(id = row_number())  # More robust than 1:n()
+  print_section(position_data, "writings")
+} else {
+  cat("No data available for this section.\n")
+}
 ```
 
+---
 
+## **More Information** {#more-info}
+```{r}
+cat("See full CV at [larawehbe.com/cv](http://larawehbe.com/cv) for a complete list of positions and publications.")
+```
+
+---
+
+## **Disclaimer** {#disclaimer}
+```{r}
+cat("\nMade w/ [**pagedown**](https://github.com/rstudio/pagedown).  \n\nSource code: [github.com/lwehbe-1/my-cv](https://github.com/lwehbe-1/my-cv).  \n\nLast updated on ", Sys.Date(), ".")
+```
